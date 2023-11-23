@@ -1,17 +1,32 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
 import BgImage from '/src/assets/bg.png';
 import AddButtonImage from '/src/assets/Button.png';
 import { authClient } from '../../shared/axios.ts';
 import { Character } from '../../models/character.ts';
+import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
 
 const HomePage: FC = () => {
   const inputImageRef = useRef<HTMLInputElement>(null);
   const [characterStorage, setCharacterStorage] = useState<Character[]>([]);
+  const [charactersX, setCharactersX] = useState<number[]>([]);
 
   const onClickButton = async () => {
     inputImageRef.current?.click();
   };
+
+  useEffect(() => {
+    const updateX = () => {
+      const newCharactersX = charactersX.map(characterX => {
+        return Math.random() * 8 - 4;
+      });
+      console.log(newCharactersX);
+      setCharactersX(newCharactersX);
+    };
+
+    setInterval(updateX, 2000);
+  }, [characterStorage]);
 
   const handleFileChange = async () => {
     const file = inputImageRef.current?.files?.[0];
@@ -37,10 +52,14 @@ const HomePage: FC = () => {
         image: imageURL,
       },
     ]);
+    setCharactersX([...charactersX, 0]);
   };
 
   return (
     <Box bgImage={`url(${BgImage})`} bgSize="cover" w="100vw" h="100vh">
+      <Helmet>
+        <title>集まれグッズ牧場</title>
+      </Helmet>
       <Box position="fixed" bottom="140px" right="-20px">
         <Button
           variant="unstyled"
@@ -77,7 +96,9 @@ const HomePage: FC = () => {
         </Flex>
         <Flex direction="row" mt="450px" ml="450px" gap="80px">
           {characterStorage.map((character, index) => (
-            <Image key={index} src={character.image} w="100px" />
+            <motion.div key={index} animate={{ x: charactersX[index] }}>
+              <Image src={character.image} w="100px" />
+            </motion.div>
           ))}
         </Flex>
       </Flex>

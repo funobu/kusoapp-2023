@@ -3,10 +3,13 @@ from typing import Annotated
 from rembg import remove
 from PIL import Image
 from fastapi import FastAPI, UploadFile, Response
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
 app = FastAPI()
+
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 
 
